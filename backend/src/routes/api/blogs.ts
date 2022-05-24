@@ -1,5 +1,6 @@
 import { Request, Router } from "express";
-import { Attributes } from "sequelize/types";
+import { Op } from "sequelize";
+import { Attributes, WhereOptions } from "sequelize/types";
 import {
   blogFinder,
   currentUserFromToken,
@@ -9,7 +10,7 @@ import { Blog, User } from "../../models";
 
 const blogsRouter = Router();
 
-blogsRouter.get("/", async (_req, res) => {
+blogsRouter.get("/", async (req, res) => {
   const blogs = await Blog.findAll({
     attributes: {
       exclude: ["userId"],
@@ -18,6 +19,8 @@ blogsRouter.get("/", async (_req, res) => {
       model: User,
       attributes: ["name"],
     },
+    where: getWhereClause(req.query),
+    order: [["likes", "DESC"]],
   });
   res.json(blogs);
 });
@@ -57,6 +60,22 @@ blogsRouter.delete(
     }
   }
 );
+
+const getWhereClause = (query: qs.ParsedQs) => {
+  let where: WhereOptions<Attributes<Blog>> = {};
+  if (query.search) {
+    const caseInsensitiveSearch = {
+      [Op.iLike]: `%${query.search.toString()}%`,
+    };
+    where = {
+      [Op.or]: {
+        title: caseInsensitiveSearch,
+        author: caseInsensitiveSearch,
+      },
+    };
+  }
+  return where;
+};
 
 type PermittedPostAttributes = Pick<
   Attributes<Blog>,
