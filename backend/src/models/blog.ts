@@ -16,6 +16,8 @@ class Blog extends Model<InferAttributes<Blog>, InferCreationAttributes<Blog>> {
   declare title: string;
   declare likes: CreationOptional<number>;
   declare userId: ForeignKey<User["id"]>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
 }
 
 Blog.init(
@@ -48,11 +50,12 @@ Blog.init(
         min: 0,
       },
     },
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
   },
   {
     sequelize,
     underscored: true,
-    timestamps: false,
     modelName: "blog",
   }
 );

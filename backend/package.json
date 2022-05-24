@@ -8,7 +8,9 @@
     "start": "node build/index.js",
     "dev": "ts-node-dev src/index.ts",
     "print-blogs": "ts-node-dev src/cli.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:migrate": "ts-node src/scripts/migrate.ts",
+    "db:rollback": "ts-node src/scripts/rollback.ts"
   },
   "keywords": [],
   "author": "Joni Vainio-Kaila",
@@ -20,8 +22,10 @@
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
+    "ts-node": "^10.8.0",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "umzug": "^3.1.1"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
