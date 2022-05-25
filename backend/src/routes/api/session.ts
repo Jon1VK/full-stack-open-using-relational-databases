@@ -1,10 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Attributes } from "sequelize/types";
 import { User } from "../../models";
-import config from "../../utils/config";
-import { EnvironmentVariable } from "../../types";
 
 const sessionRouter = Router();
 
@@ -21,16 +18,21 @@ sessionRouter.post("/", async (req, res) => {
     return res.status(401).json({ error: "Invalid username or password" });
   }
 
-  const token = jwt.sign(
-    { userId: user.id },
-    config(EnvironmentVariable.JWT_SECRET)
-  );
+  if (!user.active) {
+    return res.status(403).json({ error: "User has been disabled" });
+  }
+
+  req.session.userId = user.id;
 
   res.json({
-    token: `Bearer ${token}`,
     username: user.username,
     name: user.name,
   });
+});
+
+sessionRouter.delete("/", (req, res) => {
+  req.session.destroy((err) => console.error(err));
+  res.status(204).end();
 });
 
 type PermittedPostAttributes = Pick<Attributes<User>, "username" | "password">;

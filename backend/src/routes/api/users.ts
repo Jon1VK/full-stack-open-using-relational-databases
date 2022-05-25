@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Attributes, WhereOptions } from "sequelize/types";
-import { userFinder } from "../../middlewares";
+import { currentUserFromSession, userFinder } from "../../middlewares";
 import { Blog, ReadingList, User } from "../../models";
 
 const usersRouter = Router();
@@ -31,7 +31,6 @@ usersRouter.get("/:id", async (req, res) => {
       read: req.query.read === "true",
     };
   }
-
   const user = await User.findByPk(req.params.id, {
     attributes: ["name", "username"],
     include: {
@@ -46,11 +45,19 @@ usersRouter.get("/:id", async (req, res) => {
   res.json(user);
 });
 
-usersRouter.put("/:username", userFinder, async (req, res) => {
-  const params = permittedPutAttributes(req.body as Attributes<User>);
-  const updatedUser = await req.user.update(params);
-  res.json(updatedUser);
-});
+usersRouter.put(
+  "/:username",
+  currentUserFromSession,
+  userFinder,
+  async (req, res) => {
+    if (req.currentUser.id !== req.user.id) {
+      return res.status(403).end();
+    }
+    const params = permittedPutAttributes(req.body as Attributes<User>);
+    const updatedUser = await req.user.update(params);
+    res.json(updatedUser);
+  }
+);
 
 type PermittedPostAttributes = Pick<
   Attributes<User>,

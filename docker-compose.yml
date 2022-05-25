@@ -12,7 +12,7 @@ services:
       - backend_node_modules:/app/node_modules
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432
-      - JWT_SECRET=SECRET
+      - SESSION_SECRET=SECRET
       - PORT=3000
     depends_on:
       - postgres
