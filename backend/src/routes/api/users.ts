@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Attributes } from "sequelize/types";
+import { Attributes, WhereOptions } from "sequelize/types";
 import { userFinder } from "../../middlewares";
-import { Blog, User } from "../../models";
+import { Blog, ReadingList, User } from "../../models";
 
 const usersRouter = Router();
 
@@ -21,6 +21,28 @@ usersRouter.get("/", async (_req, res) => {
 usersRouter.post("/", async (req, res) => {
   const params = permittedPostAttributes(req.body as Attributes<User>);
   const user = await User.create(params);
+  res.json(user);
+});
+
+usersRouter.get("/:id", async (req, res) => {
+  let where: WhereOptions<Attributes<ReadingList>> = {};
+  if (req.query.read) {
+    where = {
+      read: req.query.read === "true",
+    };
+  }
+
+  const user = await User.findByPk(req.params.id, {
+    attributes: ["name", "username"],
+    include: {
+      model: Blog,
+      through: { attributes: ["id", "read"], as: "readinglist", where },
+      as: "readings",
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "userId"],
+      },
+    },
+  });
   res.json(user);
 });
 
