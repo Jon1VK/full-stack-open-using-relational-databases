@@ -5,5 +5,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhd
 {
   "url": "example.com/blogs/3",
   "title": "Nice",
+  "year": "2022",
   "author": "Blog Creator"
 }

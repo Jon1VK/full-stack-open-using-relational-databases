@@ -79,7 +79,7 @@ const getWhereClause = (query: qs.ParsedQs) => {
 
 type PermittedPostAttributes = Pick<
   Attributes<Blog>,
-  "author" | "title" | "url" | "likes"
+  "author" | "title" | "url" | "likes" | "year"
 >;
 
 type PermittedPutAttributes = Pick<Attributes<Blog>, "likes">;
@@ -87,12 +87,14 @@ type PermittedPutAttributes = Pick<Attributes<Blog>, "likes">;
 const permittedPostAttributes = ({
   author,
   title,
+  year,
   url,
   likes,
 }: Attributes<Blog>): PermittedPostAttributes => ({
   author,
   url,
   title,
+  year,
   likes,
 });
 

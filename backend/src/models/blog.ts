@@ -14,6 +14,7 @@ class Blog extends Model<InferAttributes<Blog>, InferCreationAttributes<Blog>> {
   declare author: CreationOptional<string>;
   declare url: string;
   declare title: string;
+  declare year: number;
   declare likes: CreationOptional<number>;
   declare userId: ForeignKey<User["id"]>;
   declare createdAt: CreationOptional<Date>;
@@ -40,6 +41,18 @@ Blog.init(
       allowNull: false,
       validate: {
         notEmpty: true,
+      },
+    },
+    year: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1991,
+        customMax(value: string) {
+          if (parseInt(value) > new Date().getFullYear()) {
+            throw new Error("Year must not be in the future");
+          }
+        },
       },
     },
     likes: {
